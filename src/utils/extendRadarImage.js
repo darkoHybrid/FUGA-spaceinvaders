@@ -1,22 +1,32 @@
 import getMatrixSize from './getMatrixSize';
-import RadarReader from '../reader/radarReader';
 
-export default async function (invader) {
+/**
+ * 
+ * @param {array} radarRaw original radar image that will be extended
+ * @param {array} invader invader wich width and height will be used to extend radar matrix
+ */
+export default async function (radarRaw, invader) {
     try {
-        const radar = new RadarReader().getRadar();
-        const radarSize = getMatrixSize(radar);
+        // clone radar matrix
+        const radarMatrix = radarRaw[0].slice(0);
+        // get radar width and height
+        const radarSize = getMatrixSize([radarMatrix]);
+        // get invader width and height
         const invaderSize = getMatrixSize([invader]);
 
         for (var i = 0; i < radarSize[0]['y']; i++) {
-            radar[0][i] = '-'.repeat(invaderSize[0]['x'] - 1) + radar[0][i] + '-'.repeat(invaderSize[0]['x'] - 1);
+            // add new columns defined by invaderSize (width - 1)
+            radarMatrix[i] = '-'.repeat(invaderSize[0]['x'] - 1) + radarMatrix[i] + '-'.repeat(invaderSize[0]['x'] - 1);
         }
 
         for (var y = 0; y < (invaderSize[0]['y'] - 1); y++) {
-            radar[0].unshift('-'.repeat(invaderSize[0]['x'] - 1) + '-'.repeat(radarSize[0]['x']) + '-'.repeat(invaderSize[0]['x'] - 1));
-            radar[0].push('-'.repeat(invaderSize[0]['x'] - 1) + '-'.repeat(radarSize[0]['x']) + '-'.repeat(invaderSize[0]['x'] - 1));
+            // add new rows defined by invaderSize (height - 1) to the bottom of the matrix
+            radarMatrix.unshift('-'.repeat(invaderSize[0]['x'] - 1) + '-'.repeat(radarSize[0]['x']) + '-'.repeat(invaderSize[0]['x'] - 1));
+            // add new rows defined by invaderSize (height - 1) at the top of the matrix
+            radarMatrix.push('-'.repeat(invaderSize[0]['x'] - 1) + '-'.repeat(radarSize[0]['x']) + '-'.repeat(invaderSize[0]['x'] - 1));
         }
 
-        return radar;
+        return [radarMatrix];
     } catch(err) {
         console.log(err);
     }

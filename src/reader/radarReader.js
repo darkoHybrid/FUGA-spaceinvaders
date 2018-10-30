@@ -2,6 +2,9 @@ import fs from 'fs';
 import path from 'path';
 const radarFolder = path.join(__dirname, '../', 'files/radar');
 
+/**
+ * Class used to read and transform file to matrix
+ */
 export default class InvadersReader {
     constructor() {
         this.radar = [];
@@ -13,11 +16,8 @@ export default class InvadersReader {
         try {
             files = fs.readdirSync(radarFolder);
             files.forEach(file => {
+                // read file into array by spliting each row with new line
                 const radarText = fs.readFileSync(`${radarFolder}/${file}`, 'utf8').toString().split("\n");
-                const radarArr = [];
-                radarText.forEach(text => {
-                    radarArr.push(text.split(""));
-                })
                 this.radar.push(radarText);
             });
         } catch (err) {
@@ -26,6 +26,7 @@ export default class InvadersReader {
     }
 
     getRadar() {
+        // returns clone of the array not the instance itself
         return this.radar.slice(0);
     }
 }
